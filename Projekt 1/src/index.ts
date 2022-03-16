@@ -12,17 +12,17 @@ app.get('/', function (req, res) {
         div: (num1, num2) => num1 / num2,
         mul: (num1, num2) => num1 * num2,
     }
+    let wynik;
     switch(operation){
         case 'dodaj':
-            operations.add;
+            wynik = operations.add;
         case 'odejmij':
-            operations.div;
+            wynik =operations.div;
         case 'pomnoz':
-            operations.mul;
+            wynik = operations.mul;
         case 'dziel':
             operations.div;
     }
-    let wynik;
     res.send(wynik.toString());
 })
 app.listen(3000)
