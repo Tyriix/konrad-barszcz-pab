@@ -1,36 +1,53 @@
-import express from 'express'
 import {Request, Response} from 'express'
-
+import Note from '../src/Note'
+const express = require('express')  
 const app = express()
 
 app.use(express.json())
 
-class Note {
-  private title: string;
-  private content: string;
-  private createDate?: string;
-  private tags?: string[];
-  private id?: number;
-
-  constructor(title: string, content: string, createDate?: string, tags?: string[], id?: number)
-  {
-    this.title = title;
-    this.content = content;
-    this.createDate = createDate;
-    this.tags = tags;
-    this.id = id;
-  }
-}
 const notes: Note[] = []
-app.post('/note', (req, res)=>{
-  const note = req.body;
+
+app.post('/note', (req: Request, res: Response)=>{
+  const note: Note = req.body;
+  note.id = new Date().valueOf();
   notes.push(note)
-  res.send('Dodano notatkę');
+  res.status(201).send(note)
 })
 
-app.get('/notes', (req, res) =>
+app.get('/note/:id', (req: Request, res: Response) =>
 {
-  res.send(notes);
+  const id = +req.params.id;
+  const note = notes.find(x => x.id === id);
+  if(note == undefined)
+  {
+    res.status(404).send("Ta notatka nie istnieje");
+  }
+  else
+  {
+  res.status(200).send(note);
+  }
+})
+
+app.put('/note/:id', (req: Request, res: Response) =>
+{
+  const note: Note = req.body;
+  const id = +req.params.id;
+
+  res.status(201).send(note);
+})
+
+app.delete('/note/:id', (req: Request, res: Response) =>
+{
+  const id = +req.params.id;
+  let note = notes.find(x => x.id === id)
+  if(note == undefined)
+  {
+    res.status(400).send(`Nie znaleziono notatki.`);
+  }
+  else{
+  notes.splice(notes.findIndex(x => x.id === (id)), 1)
+  res.status(204).send(`Usunięto notatkę.`);
+  }
 })
 
 
