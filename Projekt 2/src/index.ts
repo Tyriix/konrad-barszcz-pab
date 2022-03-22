@@ -5,13 +5,26 @@ const app = express()
 
 app.use(express.json())
 
-const notes: Note[] = []
+const notes: Note[] = [];
+
+const validate = (data: Note) =>{
+  if(data.title == null || data.title == "") return false
+  if(data.content == null || data.content == "") return false
+  return true;
+}
 
 app.post('/note', (req: Request, res: Response)=>{
   const note: Note = req.body;
+  if(!validate(note))
+  {
+    res.status(400).send("Nie podałeś tytułu lub treści.");
+  }
+  else
+  {
   note.id = new Date().valueOf();
   notes.push(note)
   res.status(201).send(note)
+  }
 })
 
 app.get('/note/:id', (req: Request, res: Response) =>
@@ -20,7 +33,7 @@ app.get('/note/:id', (req: Request, res: Response) =>
   const note = notes.find(x => x.id === id);
   if(note == undefined)
   {
-    res.status(404).send("Ta notatka nie istnieje");
+    res.status(404).send("Ta notatka nie istnieje.");
   }
   else
   {
@@ -30,10 +43,15 @@ app.get('/note/:id', (req: Request, res: Response) =>
 
 app.put('/note/:id', (req: Request, res: Response) =>
 {
-  const note: Note = req.body;
+  const updatedNote: Note = req.body;
   const id = +req.params.id;
-
-  res.status(201).send(note);
+  let currentNote = notes.find(x => x.id === id)
+  if(currentNote == undefined)
+  {
+    res.status(404).send("Ta notatka nie istnieje.");
+  }
+  notes[id] = updatedNote;
+  res.status(204).send(updatedNote);
 })
 
 app.delete('/note/:id', (req: Request, res: Response) =>
