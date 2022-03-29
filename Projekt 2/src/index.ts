@@ -23,7 +23,7 @@ const validateNote = (data: Note) =>{
 //ADD NOTE
 app.post('/note', (req: Request, res: Response)=>{
   const note: Note = req.body;
-  let newTags: any[] = req.body.tags;
+  let newTags: string[] = req.body.tags;
   if(!validateNote(note))
   {
 
@@ -41,6 +41,7 @@ app.post('/note', (req: Request, res: Response)=>{
           let tagName = element;
           let newTag: Tag = new Tag(tagId, tagName);
           tags.push(newTag);
+          fileManagement.createTag(newTag);
         });
         }
         fileManagement.createNote(note);

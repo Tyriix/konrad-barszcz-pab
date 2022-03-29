@@ -1,5 +1,6 @@
 import fs from 'fs'
 import Note from './Note';
+import Tag from './Tag';
 export class FileManagement{
 public async readFile(): Promise<void> {
     try {
@@ -10,11 +11,18 @@ public async readFile(): Promise<void> {
   }
 public async createNote(note: Note):   Promise<void>  {
     try{
-        
-      await fs.promises.appendFile('./json/notes.json',   JSON.stringify(note) + ',\n');
+      await fs.promises.appendFile('./json/notes.json', JSON.stringify(note) + ',\n');
     }
     catch (err){
       console.log(err)
     }
+}
+public async createTag(tag: Tag):   Promise<void>  {
+  try{
+    await fs.promises.appendFile('./json/tag.json', JSON.stringify(tag) + ',\n');
+  }
+  catch (err){
+    console.log(err)
+  }
 }
 }
