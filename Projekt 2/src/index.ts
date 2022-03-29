@@ -1,12 +1,14 @@
 import {Request, Response} from 'express'
 import Note from '../src/Note'
 import Tag from '../src/Tag'
+import { FileManagement} from './fileManagement'
 const express = require('express')  
 const app = express()
 
 app.use(express.json())
-import fs from 'fs';
+import fs, { readFile } from 'fs';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants'
+import { createContext } from 'vm'
 
 const notes: Note[] = [];
 const tags: Tag[] = [];
@@ -17,24 +19,11 @@ const validateNote = (data: Note) =>{
   return true;
 }
 
-//const validateTag = (data: Tag) =>{
-//  if(data.name == null || data.name == "") return false
-//  return true;
-//}
-
-//function validateTag(val: string)
-//{
-// for(var i=0; i<tags.length; i++){
-//   if(tags[i] == val){
-//      return true;
-//    }
-//  }
-//}
-
 // -----NOTES-----
 //ADD NOTE
 app.post('/note', (req: Request, res: Response)=>{
   const note: Note = req.body;
+  let newTags: any[] = req.body.tags;
   if(!validateNote(note))
   {
 
@@ -42,9 +31,20 @@ app.post('/note', (req: Request, res: Response)=>{
   }
   else
   {
-  note.id = new Date().valueOf();
-  notes.push(note)
-  res.status(201).send(note)
+        note.id = new Date().valueOf();
+        notes.push(note);
+        let fileManagement = new FileManagement();
+        if(!tags.some(r => newTags.indexOf(r.name) == 0))
+        {
+        newTags.forEach(element => {
+          let tagId = new Date().valueOf();
+          let tagName = element;
+          let newTag: Tag = new Tag(tagId, tagName);
+          tags.push(newTag);
+        });
+        }
+        fileManagement.createNote(note);
+        res.status(201).send(note)
   }
 })
 
@@ -115,6 +115,7 @@ app.get('/tag/:id', (req:Request, res:Response) =>
   }
   else
   {
+  
   res.status(200).send(tag);
   }
 })
@@ -123,6 +124,7 @@ app.get('/tag/:id', (req:Request, res:Response) =>
 app.post('/tag', (req: Request, res: Response)=>{
   const tag: Tag = req.body;
   tag.id = new Date().valueOf();
+  tag.name = req.body.name.toLowerCase();
   tags.push(tag)
   res.status(201).send(tag)
 })
@@ -137,6 +139,7 @@ app.put('/tag/:id', (req: Request, res: Response) =>
   {
     res.status(404).send("Ten tag nie istnieje.");
   }
+  updatedTag.name = req.body.name.toLowerCase();
   tags[tags.indexOf(currentTag!)] = updatedTag;
   res.status(204).send(updatedTag);
 })
