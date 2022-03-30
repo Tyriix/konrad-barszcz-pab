@@ -1,18 +1,24 @@
 import {Request, Response} from 'express'
 import Note from '../src/Note'
 import Tag from '../src/Tag'
+import User from '../src/User'
 import { FileManagement} from './fileManagement'
+import jwt from 'jsonwebtoken'
+import { json } from 'stream/consumers'
 const express = require('express')  
 const app = express()
 
 app.use(express.json())
-import fs, { readFile } from 'fs';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants'
-import { createContext } from 'vm'
 
 const notes: Note[] = [];
 const tags: Tag[] = [];
-
+const users: User[] = [
+  {
+  Login: 'Test',
+  Password: 'Test',
+  Tags: 'test'
+  }
+];
 const validateNote = (data: Note) =>{
   if(data.title == null || data.title == "") return false
   if(data.content == null || data.content == "") return false
@@ -170,6 +176,41 @@ app.get('/tags', (req: Request, res: Response) =>
   res.status(200).send(tags);
 })
 
+//------LOGIN-----
+app.post('/login', (req: Request, res: Response) =>
+{
+  // const authData= req.headers.authorization;
+  // const token = authData?.split(' ')[1] ?? ''
+  // const payload = jwt.verify(token, secret)
+  // console.log(payload);
+  const payload = req.body.Login;
+  const secret = req.body.Password;
+  let isPresent = false;
+  let isPresentIndex = null;
+
+  for(let i=0; i<users.length; i++)
+  {
+    if(users[i].Login === payload && users[i].Password === secret)
+    {
+      isPresent = true;
+      isPresentIndex = i;
+      break;
+    }
+  }
+  if(isPresent)
+    {
+      const token = jwt.sign(payload, secret);
+      // res.json({
+      //   login: true,
+      //   token: token,
+      //   data: users
+      // });
+      res.status(200).send(token);
+    }
+    else{
+      res.status(401).send('Wrong login or password.');
+    }
+})
 
 app.get('/', function (req: Request, res: Response) {
   //const jsonNote = JSON.stringify(note)
