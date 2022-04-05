@@ -2,16 +2,39 @@ import {Request, Response} from 'express'
 import Note from '../src/Note'
 import Tag from '../src/Tag'
 import { FileManagement} from './fileManagement'
+import jwt from 'jsonwebtoken';
+import User from '../src/User';
+import {verifyToken} from '../src/User';
 const express = require('express')  
 const app = express()
-
 app.use(express.json())
 import fs, { readFile } from 'fs';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants'
 import { createContext } from 'vm'
+import { Console } from 'console';
 
 const notes: Note[] = [];
 const tags: Tag[] = [];
+const users: User[] = [
+  {
+  //eyJhbGciOiJIUzI1NiJ9.dGVzdA.2WmFS_EAdYFCBOFM9pVPo9g4bpuI2I9U_JGTCfrx7Tk
+  id: 1,
+  login: 'test',
+  password: 'test'
+  },
+  {
+  //eyJhbGciOiJIUzI1NiJ9.dGVzdDI.I3XYG0SRKrOomGPui5MFMrKhkeQCTKXVrQotOrt6kZI
+  id:2,
+  login: 'test2',
+  password: 'test2'
+  },
+  {
+    //eyJhbGciOiJIUzI1NiJ9.dGVzdDM.Pau-V2DK8ZNbIGegXBzKlJ_9g9wNpQ3T9UL4yvOtd4c
+    id:3,
+    login: 'test3',
+    password: 'test2'
+  }
+];
 
 const validateNote = (data: Note) =>{
   if(data.title == null || data.title == "") return false
@@ -22,14 +45,15 @@ const validateNote = (data: Note) =>{
 // -----NOTES-----
 //ADD NOTE
 app.post('/note', (req: Request, res: Response)=>{
+  //Verify
   const note: Note = req.body;
+  const secret = req.body.password;
   let newTags: string[] = req.body.tags;
   if(!validateNote(note))
   {
-
     res.status(400).send("Nie podałeś tytułu lub treści.");
   }
-  else
+  else if(verifyToken(res, req, secret))
   {
         note.id = new Date().valueOf();
         notes.push(note);
@@ -170,6 +194,32 @@ app.get('/tags', (req: Request, res: Response) =>
   res.status(200).send(tags);
 })
 
+//------LOGIN------
+
+app.post('/login', (req: Request, res: Response) =>
+{
+  const user: User = req.body;
+  const payload = user.login;
+  const secret = user.password;
+  let isPresent = false;
+  for(let i=0; i<users.length; i++){
+ 
+    if(users[i].login === payload &&
+    users[i].password === secret){
+
+        isPresent = true;
+        break;
+    }
+  }
+  if (isPresent) {
+    const token = jwt.sign(payload, secret);
+    res.status(200).send(token);
+  } else {
+    res.status(401).send({
+      error: 'Please check name and password.',
+    });
+  }
+})
 
 app.get('/', function (req: Request, res: Response) {
   //const jsonNote = JSON.stringify(note)
