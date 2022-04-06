@@ -1,6 +1,6 @@
 import fs from 'fs'
-import Note from './Note';
-import Tag from './Tag';
+import Note from '../models/Note';
+import Tag from '../models/Tag';
 export class FileManagement{
 public async readFile(): Promise<void> {
     try {

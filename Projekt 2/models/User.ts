@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import Tag from '../src/Tag'
-class User{
-    public Login: string;
-    public Password: string;
-    public Tags: string;
-
-    constructor(User: User)
-    {
-        this.Login = User.Login;
-        this.Password = User.Password;
-        this.Tags = Tag.name;
-    }
-}
-export default User;
-=======
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 class User {
@@ -34,14 +18,20 @@ class User {
 export const verifyToken = (res: Response, req: Request, secret: string) => {
   try {
     const authData = req.headers["authorization"];
+    console.log(authData)
+    if(authData == null || authData == '')
+    {
+      return false
+    }
     const token = authData?.split(" ")[1] ?? "";
     const payload = jwt.verify(token, secret);
-    if (payload) {
-      return payload;
+    console.log(payload)
+    if (payload)
+    {
+      return true
     }
   } catch (error) {
     res.status(401).send(error);
   }
 };
 export default User;
->>>>>>> 16f16905d5971ae168c2b4ee14e0c6c1e7529b6d
