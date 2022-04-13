@@ -1,3 +1,5 @@
+import { timeStamp } from 'console';
+import { title } from 'process';
 import Tag from '../models/Tag'
 class Note {
     public title: string;
@@ -23,5 +25,4 @@ class Note {
     if(data.content == null || data.content == "") return false
     return true;
   }
-  
   export default Note;

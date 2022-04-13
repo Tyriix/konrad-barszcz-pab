@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import Note from '../models/Note'
 import Tag from '../models/Tag'
 import { validateNote } from '../models/Note'
-import { FileManagement } from '../services/fileManagement'
+import { FileManagement } from './DataStorage'
 import { verifyToken } from '../models/User';
 import { notes, tags } from '../models/SeedData'
 const express = require('express');
