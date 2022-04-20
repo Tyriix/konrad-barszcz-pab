@@ -34,4 +34,9 @@ export const verifyToken = (res: Response, req: Request, secret: string) => {
     res.status(401).send(error);
   }
 };
+export const validateRegister = (data: User) =>{
+  if(data.login == null || data.password == null) return false;
+  if(data.login.length < 6 || data.password.length < 6) return false;
+  return true;
+}
 export default User;

@@ -8,6 +8,6 @@ app.use(express.json())
 
 app.use('/note', notes);
 app.use('/tag', tags);
-app.use('/login', users);
+app.use('/user', users);
 
 app.listen(3000)

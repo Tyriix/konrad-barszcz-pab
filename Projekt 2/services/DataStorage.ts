@@ -17,7 +17,7 @@ public async readFile(): Promise<void> {
   }
 public async createNote(note: Note):   Promise<void>  {
     try{
-      await fs.promises.appendFile('./json/notes.json', JSON.stringify(note) + ',\n');
+      await fs.promises.appendFile('./json/notes.json', JSON.stringify(note) + '\n');
     }
     catch (err){
       console.log(err)
@@ -25,7 +25,7 @@ public async createNote(note: Note):   Promise<void>  {
 }
 public async createTag(tag: Tag):   Promise<void>  {
   try{
-    await fs.promises.appendFile('./json/tag.json', JSON.stringify(tag) + ',\n');
+    await fs.promises.appendFile('./json/tag.json', JSON.stringify(tag) + '\n');
   }
   catch (err){
     console.log(err)
