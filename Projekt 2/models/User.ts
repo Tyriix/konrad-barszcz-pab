@@ -7,25 +7,32 @@ class User {
   public noteId?: number[];
   public tagId?: number[];
 
-  constructor(User: User) {
-    this.login = User.login;
-    this.password = User.password;
-    this.id = User.id;
-    this.noteId = User.noteId;
-    this.tagId = User.tagId;
+  constructor(user?: User) {
+    if(user)
+    {
+      this.login = user.login;
+      this.password = user.password;
+      this.noteId = user.noteId;
+      this.tagId = user.tagId;
+    }
+    else
+    {
+      this.login = '';
+      this.password = '';
+      this.noteId = [];
+      this.tagId = [];
+    }
   }
 }
 export const verifyToken = (res: Response, req: Request, secret: string) => {
   try {
     const authData = req.headers["authorization"];
-    console.log(authData)
     if(authData == null || authData == '')
     {
       return false
     }
     const token = authData?.split(" ")[1] ?? "";
     const payload = jwt.verify(token, secret);
-    console.log(payload)
     if (payload)
     {
       return true
